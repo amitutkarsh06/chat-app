@@ -1,17 +1,32 @@
+import {useAuthContext} from "../../context/AuthContext"
+import { extractTime } from "../../utils/extractTime";
+import useConversation from "../../zustand/useConversation";
 
+const Message = ({ message }) => {
+  const { authUser } = useAuthContext();
+  const { selectedConversation } = useConversation();
+ // const fromMe = message.senderId === authUser._id;
+  const formattedTime = extractTime(message.createdAt);
+  const chatClassName =
+    message.senderId === authUser._id ? "chat-end" : "chat-start";
+  const profilePic =
+    message.senderId === authUser._id
+      ? authUser.profilePic
+      : selectedConversation?.profilePic;
+  const bubbleBgColor = message.senderId === authUser._id ? "bg-blue-500" : "";
 
-const Message = () => {
+  const shakeClass = message.shouldShake ? "shake" : "";
   return (
-    <div className="chat chat-end">
+    <div className={`chat ${chatClassName}`}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-full">
-          <img alt="image" src="https://avatar.iran.liara.run/public/28" />
+          <img alt="image" src={ profilePic} />
         </div>
           </div>
-          <div className={ `chat-bubble text-white bg-blue-500` }>
-              Hii! whatts up
+          <div className={ `chat-bubble text-white ${bubbleBgColor} pb-2 ${shakeClass}` }>
+        { message.message}
           </div>
-          <div className="chat-footer opacity-50 text-xs flex gap-1 items-center">12:42</div>
+      <div className="chat-footer opacity-50 text-xs flex gap-1 items-center ">{ formattedTime}</div>
     </div>
   );
 }
